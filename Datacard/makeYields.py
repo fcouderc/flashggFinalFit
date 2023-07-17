@@ -42,6 +42,7 @@ def get_options():
   # For systematics:
   parser.add_option('--doSystematics', dest='doSystematics', default=False, action="store_true", help="Include systematics calculations and add to datacard")
   parser.add_option('--ignore-warnings', dest='ignore_warnings', default=False, action="store_true", help="Skip errors for missing systematics. Instead output warning message")
+  parser.add_option('--hdfOut', action='store_true', help='also store an hdf version in addtion to pkl')
   return parser.parse_args()
 (opt,args) = get_options()
 
@@ -270,3 +271,7 @@ extStr = "_%s"%opt.ext if opt.ext != '' else ''
 print " --> Saving yields dataframe: ./yields%s/%s.pkl"%(extStr,opt.cat)
 if not os.path.isdir("./yields%s"%extStr): os.system("mkdir ./yields%s"%extStr)
 with open("./yields%s/%s.pkl"%(extStr,opt.cat),"wb") as fD: pickle.dump(data,fD)
+if opt.hdfOut:
+  print '  --> save an hdf version (can be used with python3) '
+  data.to_hdf('data', "./yields%s/%s.h5"%(extStr,opt.cat))
+
