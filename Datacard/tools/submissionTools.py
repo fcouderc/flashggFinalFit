@@ -56,7 +56,8 @@ def writeSubFiles(_opts):
     for cidx in range(_opts['nCats']):
       c = _opts['cats'].split(",")[cidx]
       _f.write("if [ $1 -eq %g ]; then\n"%cidx)
-      _f.write("  python %s/makeYields.py --cat %s --procs %s --ext %s --mass %s --inputWSDirMap %s %s\n"%(dwd__,c,_opts['procs'],_opts['ext'],_opts['mass'],_opts['inputWSDirMap'],_opts['modeOpts']))
+#      _f.write("  python %s/makeYields.py --cat %s --procs %s --ext %s --mass %s --inputWSDirMap %s %s\n"%(dwd__,c,_opts['procs'],_opts['ext'],_opts['mass'],_opts['inputWSDirMap'],_opts['modeOpts']))
+      _f.write("python %s/makeYields.py --cat %s --procs %s --ext %s --mass %s --inputWSDirMap %s --sigModelWSDir %s --sigModelExt %s --bkgModelWSDir %s --bkgModelExt %s %s\n"%(dwd__,c,_opts['procs'],_opts['ext'],_opts['mass'],_opts['inputWSDirMap'],_opts['sigModelWSDir'],_opts['sigModelExt'],_opts['bkgModelWSDir'],_opts['bkgModelExt'],_opts['modeOpts']))
       _f.write("fi\n")
       
     # Close .sh file
