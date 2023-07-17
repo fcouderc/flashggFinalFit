@@ -9,6 +9,7 @@ def run(cmd):
   os.system(cmd)
 
 def writePreamble(_file,_otherBase=None):
+  cwd = os.getcwd()
   _file.write("#!/bin/bash\n")
   _file.write("ulimit -s unlimited\n")
   _file.write("set -e\n")
@@ -17,7 +18,8 @@ def writePreamble(_file,_otherBase=None):
   _file.write("export SCRAM_ARCH=%s\n"%os.environ['SCRAM_ARCH'])
   _file.write("source /cvmfs/cms.cern.ch/cmsset_default.sh\n")
   _file.write("eval `scramv1 runtime -sh`\n")
-  _file.write("cd %s\n"%twd__)
+#  _file.write("cd %s\n"%twd__)
+  _file.write("cd %s\n"%cwd)
   _file.write("export PYTHONPATH=$PYTHONPATH:%s/tools:%s/tools\n\n"%(cwd__,twd__))
 
 def writeCondorSub(_file,_exec,_queue,_nJobs,_jobOpts,doHoldOnFailure=True,doPeriodicRetry=True):
@@ -98,7 +100,7 @@ def writeSubFiles(_opts):
         # Define output file name
         outf = "_".join(re.sub("_%s.root"%p,"",glob.glob("%s/*.root"%wsdir)[0].split("/")[-1]).split("_")[0:-1])+"_%s.root"%p
         outfFullName = "%s/%s"%(_opts['outputWSDir'],outf)
-        _f.write("if [ $1 -eq %g ]; then\n"%tfidx)
+        _f.write("if [ $1 -eq %g ]; then\n" % widx)
         _f.write("  hadd_workspaces %s %s/*.root\n"%(outfFullName,wsdir))
         _f.write("fi\n")
 
