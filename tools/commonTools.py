@@ -65,7 +65,8 @@ def containsNOTAG( _listOfWSFileNames ):
   return False
 
 # Function to return signal production (and decay extension if required) from input file name
-def signalFromFileName(_fileName):
+def signalFromFileName(_fileNamePath):
+  _fileName = os.path.basename(_fileNamePath)
   p, d = None, None
   if "ggZH" in _fileName:
     p = "ggzh"
@@ -104,7 +105,8 @@ def signalFromFileName(_fileName):
   return p,d
 
 # Function to return mass from input file name
-def massFromFileName(_fileName):
+def massFromFileName(_fileNamePath):
+  _fileName = os.path.basename(_fileNamePath)
   m = None
   # to be done with regexp
   if "_M120_" in _fileName: m = 120
