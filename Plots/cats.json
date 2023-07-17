@@ -6,7 +6,10 @@
     "RECO_VBFTOPO_ACVBFSM_Tag0":"qqH SM-like",
     "RECO_VBFTOPO_ACVBFBSM_Tag0":"qqH BSM-like high purity",
     "RECO_VBFTOPO_ACVBFBSM_Tag1":"qqH BSM-like med purity",
-    "RECO_VBFTOPO_VHHAD_Tag0":"qqH VH Tag0",
-    "RECO_VBFTOPO_VHHAD_Tag1":"qqH VH Tag1",
+    "RECO_VBFTOPO_ACVHHADBSM_Tag0":"qqH BSM-like high purity",
+    "RECO_VBFTOPO_ACVHHADBSM_Tag1":"qqH BSM-like med purity",
+    "RECO_VBFTOPO_ACVHHADSM_Tag0":"qqH SM-like high purity",
+    "RECO_VBFTOPO_ACVHHADSM_Tag1":"qqH SM-like med purity",
+    "RECO_VBFTOPO_ACVHHADSM_Tag2":"qqH SM BSM mix "
 }
 
