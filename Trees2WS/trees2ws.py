@@ -21,6 +21,8 @@ def get_options():
   parser.add_option('--doNNLOPS',dest='doNNLOPS', default=False, action="store_true", help='Add NNLOPS weight variable: NNLOPSweight')
   parser.add_option('--doSystematics',dest='doSystematics', default=False, action="store_true", help='Add systematics datasets to output WS')
   parser.add_option('--doSTXSSplitting',dest='doSTXSSplitting', default=False, action="store_true", help='Split output WS per STXS bin')
+  parser.add_option('--partial_json', default=None, help='json containing weights for partial dataset')
+
   return parser.parse_args()
 (opt,args) = get_options()
 
@@ -65,6 +67,24 @@ def add_vars_to_workspace(_ws=None,_data=None,_stxsVar=None):
       _vars[var].setBins(1)
     getattr(_ws,'import')(_vars[var],ROOT.RooFit.Silence())
   return _vars.keys()
+
+
+# get the weight for partial processing (taken frm environement variable so it can be easily added to the condor submission script)
+w_partial = 1
+if opt.partial_json is not None:
+  import json
+  with open(opt.partial_json, 'r') as fjs:
+    js_w = {jj['dset']: jj['w_partial'] for jj in json.load(fjs)}
+
+  mydset = '/' + opt.inputTreeFile.split('output_')[-1].rsplit('_', 1)[0]
+  print mydset
+  w_partial = js_w[mydset]
+  if w_partial < 1:
+    #  weight can not be < 1 since at most all files were produced
+    w_partial = 1/w_partial
+  
+  print " ---> correct weight with partial weight : %f" % w_partial
+
 
 # Function to make RooArgSet
 def make_argset(_ws=None,_varNames=None):
@@ -166,6 +186,9 @@ for cat in cats:
 
   # Concatenate current dataframes
   df = pandas.concat(dfs.values(), axis=1)
+  
+  #### change here the weight relative to partial MC dataset production
+  df['weight'] *= w_partial
 
   # Add STXS splitting var if splitting necessary
   if opt.doSTXSSplitting: df[stxsVar] = t.pandas.df(stxsVar)
