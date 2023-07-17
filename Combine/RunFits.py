@@ -15,6 +15,7 @@ def get_options():
   parser.add_option('--inputJson', dest='inputJson', default='inputs.json', help="Input json file to define fits")
   parser.add_option('--mode', dest='mode', default='mu_inclusive', help="Type of fit")
   parser.add_option('--ext', dest='ext', default='', help="Running over Datacard with extension")
+  parser.add_option('--extOut', dest='extOut', default=None, help="Customized output directory")
   parser.add_option('--setPdfIndices', dest='setPdfIndices', action="store_true", default=False, help="Set pdf indixes from pdfindex.json")
   parser.add_option('--doObserved', dest='doObserved', action="store_true", default=False, help="Fit to data")
   parser.add_option('--snapshotWSFile', dest='snapshotWSFile', default='', help="Full path to snapshot WS file (use when running observed statonly as nuisances are froze at postfit values)")
@@ -78,7 +79,12 @@ else:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Make folder for running fits if does not exist
-if not os.path.isdir("runFits%s_%s"%(opt.ext,opt.mode)): os.system("mkdir runFits%s_%s"%(opt.ext,opt.mode))
+dir_out = "runFits%s_%s"%(opt.ext,opt.mode)
+print opt.extOut
+if opt.extOut is not None:
+  dir_out = "runFits_%s"%(opt.extOut)
+
+if not os.path.isdir(dir_out): os.system("mkdir -p %s" % dir_out)
 
 # Read json file
 with open( opt.inputJson ) as jsonfile: inputs = json.load(jsonfile)[opt.mode]
@@ -141,7 +147,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For singles point
@@ -151,7 +157,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo singles %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo singles %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo singles %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For fixed point
@@ -161,7 +167,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo fixed %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s --algo fixed %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s --algo fixed %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For asymptotic limit
@@ -171,7 +177,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M AsymptoticLimits -m 125 %s %s -n _%s_%s --redefineSignalPOI %s %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M AsymptoticLimits -m 125 %s %s -n _%s_%s --redefineSignalPOI %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M AsymptoticLimits -m 125 %s %s -n _%s_%s --redefineSignalPOI %s %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,poi,_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For 1D scan when profiling other pois
@@ -181,7 +187,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 1 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For 1D scan when fixing other pois
@@ -191,7 +197,7 @@ for fidx in range(len(fits)):
       if opt.batch == 'local':
         fitcmd = "combine -M MultiDimFit -m 125 %s --floatOtherPOIs 0 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 %s %s %s"%(d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_fit_opts,pdf_opts,common_opts)
       else:
-        fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 0 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,poi,d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
+        fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s --floatOtherPOIs 0 %s -n _%s_%s -P %s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(dir_out,_name,poi,d_opts,exp_opts,_name,poi,poi,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
       run(fitcmd,opt)
 
   # For 2D scan: fix other pois to 0
@@ -201,7 +207,7 @@ for fidx in range(len(fits)):
     if opt.batch == 'local':
       fitcmd = "combine -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 1 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s"%(d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts)
     else:
-      fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 1 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,_poisStr,d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
+      fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 1 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(dir_out,_name,_poisStr,d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
     run(fitcmd,opt)
 
   # For 2D scan: fix other pois to 0
@@ -211,7 +217,7 @@ for fidx in range(len(fits)):
     if opt.batch == 'local':
       fitcmd = "combine -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 0 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s"%(d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts)
     else:
-      fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 0 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,_poisStr,d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
+      fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s_%s -M MultiDimFit -m 125 %s -P %s -P %s --floatOtherPOIs 0 %s -n _%s_%s --algo grid --points %s --alignEdges 1 --split-points %s %s %s %s %s; cd .."%(dir_out,_name,_poisStr,d_opts,_fitpois[0],_fitpois[1],exp_opts,_name,_poisStr,_points.split(":")[0],_points.split(":")[1],_fit_opts,pdf_opts,common_opts,job_opts)
 
     run(fitcmd,opt)
 
@@ -222,5 +228,5 @@ for fidx in range(len(fits)):
     if opt.batch == 'local':
       fitcmd = "combine -M MultiDimFit -m 125 %s -P %s --floatOtherPOIs 1 %s -n _%s --robustHesse 1 --robustHesseSave 1 --saveFitResult %s %s %s"%(d_opts,_poi,exp_opts,_name,_fit_opts,pdf_opts,common_opts)
     else:
-      fitcmd = "cd runFits%s_%s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s -M MultiDimFit -m 125 %s -P %s --floatOtherPOIs 1 %s -n _%s --robustHesse 1 --robustHesseSave 1 --saveFitResult %s %s %s %s; cd .."%(opt.ext,opt.mode,_name,d_opts,_poi,exp_opts,_name,_fit_opts,pdf_opts,common_opts,job_opts)
+      fitcmd = "cd %s; source /cvmfs/cms.cern.ch/crab3/crab.sh; combineTool.py --task-name %s -M MultiDimFit -m 125 %s -P %s --floatOtherPOIs 1 %s -n _%s --robustHesse 1 --robustHesseSave 1 --saveFitResult %s %s %s %s; cd .."%(dir_out,_name,d_opts,_poi,exp_opts,_name,_fit_opts,pdf_opts,common_opts,job_opts)
     run(fitcmd,opt)
