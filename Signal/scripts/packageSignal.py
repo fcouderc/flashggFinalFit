@@ -19,6 +19,8 @@ def get_options():
   return parser.parse_args()
 (opt,args) = get_options()
 
+opt.massPoints='125'
+
 def rooiter(x):
   iter = x.iterator()
   ret = iter.Next()
@@ -29,6 +31,7 @@ def rooiter(x):
 # Extract all files to be merged
 fNames = {}
 for ext in opt.exts.split(","): fNames[ext] = glob.glob("outdir_%s/signalFit/output/CMS-HGG_sigfit_%s_*_%s.root"%(ext,ext,opt.cat))
+
 
 # Define ouput packaged workspace
 print " --> Packaging output workspaces"
@@ -47,6 +50,8 @@ for ext, fNames_by_ext in fNames.iteritems():
     for mp in opt.massPoints.split(","):
       if 'ALT' in fName and mp!=MHNominal: continue
       d = ROOT.TFile(fName).Get("wsig_13TeV").data("sig_mass_m%s_%s"%(mp,opt.cat))
+      if d is None:
+        continue
       for i in range(d.numEntries()):
         p = d.get(i)
         w = d.weight()
