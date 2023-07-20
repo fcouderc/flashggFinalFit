@@ -157,6 +157,8 @@ target_procs_qqh["RECO_VBFTOPO_BSM_Tag0"] = ['qqH_GE2J_MJJ_GT350_PTH_GT200','WH_
 target_procs_qqh["RECO_VBFTOPO_BSM_Tag1"] = ['qqH_GE2J_MJJ_GT350_PTH_GT200','WH_had_GE2J_MJJ_GT350_PTH_GT200','ZH_had_GE2J_MJJ_GT350_PTH_GT200']
 target_procs_qqh["RECO_VBFTOPO_VHHAD_Tag0"] = ['qqH_GE2J_MJJ_60_120','WH_had_GE2J_MJJ_60_120','ZH_had_GE2J_MJJ_60_120']
 target_procs_qqh["RECO_VBFTOPO_VHHAD_Tag1"] = ['qqH_GE2J_MJJ_60_120','WH_had_GE2J_MJJ_60_120','ZH_had_GE2J_MJJ_60_120']
+target_procs_qqh["RECO_VBFTOPO_VHHAD_Tag0"] = ['qqH_GE2J_MJJ_60_120','WH_had_GE2J_MJJ_60_120','ZH_had_GE2J_MJJ_60_120']
+target_procs_qqh["RECO_VBFTOPO_VHHAD_Tag1"] = ['qqH_GE2J_MJJ_60_120','WH_had_GE2J_MJJ_60_120','ZH_had_GE2J_MJJ_60_120']
 
 # qqH tags for anomalous couplings
 target_procs_ggh_ac = od()
@@ -227,8 +229,14 @@ target_procs_qqh_ac["RECO_VBFTOPO_ACVBFBSM_Tag1"] = ['qqH']
 target_procs_qqh_ac["RECO_VBFTOPO_ACVBFSM_Tag0"] = ['qqH']
 
 target_procs_vh_ac = od()
-target_procs_vh_ac["RECO_VBFTOPO_VHHAD_Tag0"] = ['vH']
-target_procs_vh_ac["RECO_VBFTOPO_VHHAD_Tag1"] = ['vH']
+#target_procs_vh_ac["RECO_VBFTOPO_VHHAD_Tag0"] = ['vH']
+#target_procs_vh_ac["RECO_VBFTOPO_VHHAD_Tag1"] = ['vH']
+target_procs_qqh_ac["RECO_VBFTOPO_ACVHHADBSM_Tag0"] = ['qqH']
+target_procs_qqh_ac["RECO_VBFTOPO_ACVHHADBSM_Tag1"] = ['qqH']
+target_procs_qqh_ac["RECO_VBFTOPO_ACVHHADSM_Tag0"] = ['qqH']
+target_procs_qqh_ac["RECO_VBFTOPO_ACVHHADSM_Tag1"] = ['qqH']
+target_procs_qqh_ac["RECO_VBFTOPO_ACVHHADSM_Tag2"] = ['qqH']
+
 target_procs_vh_ac["RECO_VH_MET_Tag0"] = ['vH']
 target_procs_vh_ac["RECO_VH_MET_Tag1"] = ['vH']
 target_procs_vh_ac["RECO_VH_MET_Tag2"] = ['vH']
