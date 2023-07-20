@@ -54,6 +54,7 @@ if opt.inputConfig != '':
 
     # Delete copy of file
     os.system("rm config.py")
+    if not os.path.isfile(options['dataFile']): options['dataFile'] = "%s/allData.root" % _cfg['inputWSDir']
 
   else:
     print "[ERROR] %s config file does not exist. Leaving..."%opt.inputConfig
@@ -61,6 +62,9 @@ if opt.inputConfig != '':
 else:
   print "[ERROR] Please specify config file to run from. Leaving..."%opt.inputConfig
   leave()
+
+
+
 
 # Check if mode is allowed in options
 if options['mode'] not in ['fTestParallel']:
