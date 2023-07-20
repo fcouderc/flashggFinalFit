@@ -81,7 +81,6 @@ if opt.batch in ['IC','Rome']:
   else: print " --> [DRY-RUN] jobs have not been submitted"
 
 elif opt.batch == 'condor':
-
   # Create submission file
   fsub = open("./SplusBModels%s/toys/jobs/sub_toys.sh"%opt.ext,'w')
   fsub.write("#!/bin/bash\n")
@@ -122,6 +121,7 @@ elif opt.batch == 'condor':
   fcondor.write("periodic_release =  (NumJobStarts < 3) && ((CurrentTime - EnteredCurrentStatus) > 600)\n\n")
   fcondor.write("+JobFlavour = \"%s\"\n"%opt.queue)
   fcondor.write("queue %s\n"%opt.nToys)
+  fcondor.close()
 
   # Submission
   os.system("chmod 775 ./SplusBModels%s/toys/jobs/sub_toys.sh"%opt.ext)
