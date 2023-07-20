@@ -68,6 +68,15 @@ def get_options():
 ROOT.gStyle.SetOptStat(0)
 ROOT.gROOT.SetBatch(True)
 
+
+# -- find if all mh are available, if not use only one mass point (otherwise issue in TSpline extrapolations)
+samples_proc = glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,MHNominal,opt.proc))
+print samples_proc
+if len(samples_proc) != 3:
+  print 'Not enough sample for interpolation just use nominal MH'
+  opt.massPoints = '125'
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # SETUP: signal fit
 if( len(opt.massPoints.split(",")) == 1 )&( opt.MHPolyOrder > 0 ):
@@ -152,7 +161,7 @@ nominalDatasets = od()
 datasetRVForFit = od()
 for mp in opt.massPoints.split(","):
   if 'ALT' in procRVFit and mp!=MHNominal: continue
-  print glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procRVFit))
+  samples = glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procRVFit))
   WSFileName = glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procRVFit))[0]
   f = ROOT.TFile(WSFileName,"read")
   inputWS = f.Get(inputWSName__)
@@ -169,6 +178,11 @@ if( datasetRVForFit[MHNominal].numEntries() < opt.replacementThreshold  )|( data
   procReplacementFit, catReplacementFit = rMap['procRVMap'][opt.cat], rMap['catRVMap'][opt.cat]
   for mp in opt.massPoints.split(","):
     if 'ALT' in procRVFit and mp!=MHNominal: continue
+    print "%s/output*%s*%s.root"%(opt.inputWSDir,mp,procReplacementFit)
+    print glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procReplacementFit))
+    if len( glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procReplacementFit))) == 0:
+      print "Missing mass point %s for sig %s for cat %s and ws = %s" % (mp, procReplacementFit, opt.cat, nominalWSFileName)
+      continue
     WSFileName = glob.glob("%s/output*%s*%s.root"%(opt.inputWSDir,mp,procReplacementFit))[0]
     f = ROOT.TFile(WSFileName,"read")
     inputWS = f.Get(inputWSName__)
@@ -340,5 +354,6 @@ if opt.doPlots:
     plotPdfComponents(ssfRV,_outdir=outdir,_extension="RV_",_proc=procRVFit,_cat=catRVFit) 
     plotPdfComponents(ssfWV,_outdir=outdir,_extension="WV_",_proc=procWVFit,_cat=catRVFit) 
   # Plot interpolation
-  plotInterpolation(fm,_outdir=outdir) 
-  plotSplines(fm,_outdir=outdir,_nominalMass=MHNominal) 
+    plotInterpolation(fm,_outdir=outdir) 
+    if opt.massPoints.split(',') >= 3:  # avoid spline crashes for low number of mass points
+      plotSplines(fm,_outdir=outdir,_nominalMass=MHNominal) 
