@@ -50,7 +50,7 @@ if [[ $STEP == "yields" ]]; then
 	altproc_nonvbf=`echo ${altproc} | sed 's|_||g'`
         vbfsamples="VBF,VBF_${altproc},VBF_${altproc}f05"
 	zhsamples="QQ2HLL,ZH_${altproc_nonvbf},ZH_${altproc_nonvbf}f05ph0"
-        if [[ $altproc == "ALT_0PH" ]]; then # not all the WH alternative samples are available yet
+        if [[ $altproc == "ALT_0PH" ]] || [[ $altproc == "ALT_0M" ]]; then # not all the WH alternative samples are available yet
 	    whsamples="WMINUSH2HQQ,WPLUSH2HQQ,WH_${altproc_nonvbf},WH_${altproc_nonvbf}f05ph0"
         else
             whsamples="WMINUSH2HQQ,WPLUSH2HQQ"
